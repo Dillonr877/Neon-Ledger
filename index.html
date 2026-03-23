@@ -1,79 +1,13 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Gaming Checklist — Same URL Full Functionality</title>
-  <style>
-    :root{ --bg: #0f1724; --surface:#0b1220; --muted:#94a3b8; --accent:#7c3aed; --success:#16a34a; --danger:#ef4444; --glass: rgba(255,255,255,0.03); --radius:12px; --card-pad:14px; --ui-size:14px; }
-    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui; background:linear-gradient(180deg,var(--bg), #071023 80%); color:var(--muted);}
-    .app{max-width:980px;margin:28px auto;padding:18px;}
-    .card{background:var(--surface);border-radius:var(--radius);padding:var(--card-pad);box-shadow: 0 6px 18px rgba(2,6,23,0.6)}
-    .add-row{display:flex;gap:8px;margin-bottom:12px}
-    input{background:transparent;border:1px solid rgba(255,255,255,0.03);padding:10px;border-radius:9px;color:var(--muted);outline:none;flex:1}
-    button{background:var(--glass);border:0;padding:8px 10px;border-radius:10px;color:var(--muted);cursor:pointer;font-size:13px}
-    button.primary{background:linear-gradient(90deg,var(--accent),#5b21b6);color:white}
-    .task-list{display:flex;flex-direction:column;gap:10px}
-    .task{display:flex;gap:10px;align-items:center;padding:10px;border-radius:10px;background:linear-gradient(180deg, rgba(0,0,0,0.03), transparent);}
-    .checkbox{width:18px;height:18px;border-radius:5px;border:2px solid rgba(255,255,255,0.06);display:grid;place-items:center;cursor:pointer}
-    .checkbox.checked{background:var(--success);border:2px solid rgba(0,0,0,0.1)}
-    .title{flex:1;font-weight:600;color:var(--muted)}
-    .right-actions{display:flex;gap:8px;align-items:center}
-  </style>
-</head>
-<body data-theme="dark">
-  <div class="app">
-    <h1 style="color:var(--accent)">Gaming Checklist</h1>
-    <div class="card">
-      <div class="add-row">
-        <input id="newTaskInput" placeholder="Add new task" />
-        <button id="addTaskBtn" class="primary">Add</button>
-      </div>
-      <div id="taskList" class="task-list"></div>
-    </div>
-  </div>
-  <script>
-    const STORAGE_KEY = 'gaming-checklist:v1';
-    let state = { tasks: [] };
-
-    function loadState(){
-      const ls = localStorage.getItem(STORAGE_KEY);
-      if(ls){ try{ state = JSON.parse(ls); } catch(e){ state = { tasks: [] }; }}
-    }
-    function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
-    function saveAndRender(){ saveState(); render(); broadcastState(); }
-
-    function render(){
-      const list = document.getElementById('taskList');
-      list.innerHTML = '';
-      state.tasks.forEach((t,idx)=>{
-        const el = document.createElement('div');
-        el.className = 'task';
-        el.innerHTML = `<div class="checkbox${t.completed?' checked':''}"></div><div class="title" contenteditable>${t.title}</div><div class="right-actions"><button>Delete</button></div>`;
-        el.querySelector('.checkbox').onclick = () => { t.completed = !t.completed; saveAndRender(); };
-        el.querySelector('.title').oninput = (e) => { t.title = e.target.textContent; saveState(); };
-        el.querySelector('.right-actions button').onclick = () => { state.tasks.splice(idx,1); saveAndRender(); };
-        list.appendChild(el);
-      });
-    }
-
-    document.getElementById('addTaskBtn').onclick = () => {
-      const val = document.getElementById('newTaskInput').value.trim();
-      if(!val) return;
-      state.tasks.push({ title: val, completed: false });
-      document.getElementById('newTaskInput').value = '';
-      saveAndRender();
-    };
-
-    const bc = ('BroadcastChannel' in window) ? new BroadcastChannel('gaming-checklist') : null;
-    function broadcastState(){
-      try{ bc && bc.postMessage({type:'state', state}); localStorage.setItem('gaming-checklist:remote', JSON.stringify({state})); }catch(e){}
-    }
-    if(bc){ bc.onmessage = (e)=>{ if(e.data && e.data.type==='state'){ state = e.data.state; saveAndRender(); } } }
-    window.addEventListener('storage', (e)=>{ if(e.key==='gaming-checklist:remote'){ try{ const p = JSON.parse(e.newValue); if(p && p.state){ state = p.state; saveAndRender(); } }catch(_){} } });
-
-    loadState();
-    render();
-  </script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Google AI Studio App</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>
+
